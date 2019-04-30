@@ -7,6 +7,8 @@
 #define NUM_LEDS    144
 int RECV_PIN = 2;
 
+int LED_OFFSET = 144 / 2;
+
 CRGB leds[NUM_LEDS];
 
 IRrecv irrecv(RECV_PIN);
@@ -55,7 +57,7 @@ float hour_pre_led;
 int hour_led_old = 0;
 int hour_led2_old = 0;
 
-int bright_scale = 5;
+int bright_scale = 1;
 
 unsigned long cur_mil;
 float mills;
@@ -64,8 +66,10 @@ int mills_and_time;
 void setup() {
   FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUM_LEDS);
   Serial.begin(9600);
-  //Serial.println(start_time);
+  Serial.println(start_time);
+  //RTC.set(1556619998);
   start_time = RTC.get();
+  Serial.println(start_time);
   irrecv.enableIRIn();
 }
 
@@ -86,7 +90,7 @@ void loop() {
   //SubSeconds
   real_psec = mills / 1000.0f;
   psec_pre_led = mills * NUM_LEDS;
-  psec_led = (int)psec_pre_led;
+  psec_led = ((int)psec_pre_led + LED_OFFSET) % (NUM_LEDS - 1);
   psec_bright = psec_pre_led - psec_led;
   psec_led2 = psec_led + 1 % (NUM_LEDS - 1);
 
@@ -100,7 +104,7 @@ void loop() {
   //Seconds
   real_sec = ((float)second(start_time + mills_and_time) + mills) / 60.0f;
   sec_pre_led = ((float)second(start_time + mills_and_time) + mills) / mod;
-  sec_led = (int)sec_pre_led;
+  sec_led = ((int)sec_pre_led + LED_OFFSET) % (NUM_LEDS - 1);
   sec_bright = sec_pre_led - sec_led;
   sec_led2 = sec_led + 1 % (NUM_LEDS - 1);
 
@@ -114,7 +118,7 @@ void loop() {
   //Minutes
   real_min = ((float)minute(start_time + mills_and_time) + real_sec) / 60.0f;
   min_pre_led = ((float)minute(start_time + mills_and_time) + real_sec) / mod;
-  min_led = (int)min_pre_led;
+  min_led = ((int)min_pre_led + LED_OFFSET) % (NUM_LEDS - 1);
   min_bright = min_pre_led - min_led;
   min_led2 = min_led + 1 % (NUM_LEDS - 1);
 
@@ -133,7 +137,7 @@ void loop() {
   //Serial.println(hour_pre_led);
   hour_pre_led = hour_pre_led / mod12;
   //Serial.println(hour_pre_led);
-  hour_led = (int)hour_pre_led;
+  hour_led = ((int)hour_pre_led + LED_OFFSET) % (NUM_LEDS - 1);
   hour_bright = hour_pre_led - hour_led;
   hour_led2 = hour_led + 1 % (NUM_LEDS - 1);
 
