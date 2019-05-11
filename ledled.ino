@@ -105,15 +105,38 @@ void loop() {
   real_sec = ((float)second(start_time + mills_and_time) + mills) / 60.0f;
   sec_pre_led = ((float)second(start_time + mills_and_time) + mills) / mod;
   sec_led = ((int)sec_pre_led + LED_OFFSET) % (NUM_LEDS - 1);
-  sec_bright = sec_pre_led - sec_led;
+  sec_bright = sec_pre_led - (int)sec_pre_led;
   sec_led2 = sec_led + 1 % (NUM_LEDS - 1);
 
   leds[sec_led] = CRGB::Purple;
   leds[sec_led2] = CRGB::Purple;
-  leds[sec_led2].nscale8(sec_bright * 256);
-  leds[sec_led].nscale8((1.0f - sec_bright) * 256);
+  leds[sec_led2].nscale8(sec_bright * 255);
+  leds[sec_led].nscale8((1.0f - sec_bright) * 255);
   leds[sec_led] /= bright_scale;
   leds[sec_led2] /= bright_scale;
+  //Serial.println(leds[sec_led]);
+  if (String(leds[sec_led]) == "0" and String(leds[sec_led2]) == "0") {
+    Serial.println("-----");
+    Serial.println(real_sec);
+    Serial.println(sec_pre_led);
+    Serial.println(sec_led);
+    Serial.println(sec_led2);
+    Serial.println(sec_bright);
+    Serial.println(sec_bright * 255);
+    Serial.println((1.0f - sec_bright) * 255);
+    Serial.println("-----");
+  }
+    //Serial.println("-----");
+    //Serial.println(real_sec);
+    //Serial.println(sec_pre_led);
+    //Serial.println(sec_led);
+    //Serial.println(sec_led2);
+    //Serial.println(sec_bright);
+    //Serial.println(sec_bright * 256);
+    //Serial.println((1.0f - sec_bright) * 256);
+    //Serial.println("-----");
+      //Serial.println(sec_bright * 256);
+    //Serial.println((1.0f - sec_bright) * 256);
 
   //Minutes
   real_min = ((float)minute(start_time + mills_and_time) + real_sec) / 60.0f;
